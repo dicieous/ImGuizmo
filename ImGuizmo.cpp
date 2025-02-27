@@ -637,22 +637,22 @@ namespace IMGUIZMO_NAMESPACE
    Style::Style()
    {
       // default values
-      TranslationLineThickness   = 3.0f;
-      TranslationLineArrowSize   = 6.0f;
-      RotationLineThickness      = 2.0f;
-      RotationOuterLineThickness = 3.0f;
-      ScaleLineThickness         = 3.0f;
-      ScaleLineCircleSize        = 6.0f;
+      TranslationLineThickness   = 4.0f;
+      TranslationLineArrowSize   = 10.0f;
+      RotationLineThickness      = 3.0f;
+      RotationOuterLineThickness = 4.0f;
+      ScaleLineThickness         = 4.0f;
+      ScaleLineCircleSize        = 10.0f;
       HatchedAxisLineThickness   = 6.0f;
       CenterCircleSize           = 6.0f;
 
       // initialize default colors
-      Colors[DIRECTION_X]           = ImVec4(0.666f, 0.000f, 0.000f, 1.000f);
-      Colors[DIRECTION_Y]           = ImVec4(0.000f, 0.666f, 0.000f, 1.000f);
-      Colors[DIRECTION_Z]           = ImVec4(0.000f, 0.000f, 0.666f, 1.000f);
-      Colors[PLANE_X]               = ImVec4(0.666f, 0.000f, 0.000f, 0.380f);
-      Colors[PLANE_Y]               = ImVec4(0.000f, 0.666f, 0.000f, 0.380f);
-      Colors[PLANE_Z]               = ImVec4(0.000f, 0.000f, 0.666f, 0.380f);
+      Colors[DIRECTION_X]           = ImVec4(0.91f,  0.30f,  0.24f,  1.000f);
+      Colors[DIRECTION_Y]           = ImVec4(0.18f,  0.86f,  0.4f,  1.000f);
+      Colors[DIRECTION_Z]           = ImVec4(0.20f,  0.60f,  0.86f,  1.000f);
+      Colors[PLANE_X]               = ImVec4(0.91f,  0.30f,  0.24f,  0.380f);
+      Colors[PLANE_Y]               = ImVec4(0.18f,  0.86f,  0.4f,  0.380f);
+      Colors[PLANE_Z]               = ImVec4(0.20f,  0.60f,  0.86f,  0.380f);
       Colors[SELECTION]             = ImVec4(1.000f, 0.500f, 0.062f, 0.541f);
       Colors[INACTIVE]              = ImVec4(0.600f, 0.600f, 0.600f, 0.600f);
       Colors[TRANSLATION_LINE]      = ImVec4(0.666f, 0.666f, 0.666f, 0.666f);
@@ -766,7 +766,7 @@ namespace IMGUIZMO_NAMESPACE
       OPERATION mOperation = OPERATION(-1);
 
       bool mAllowAxisFlip = true;
-      float mGizmoSizeClipSpace = 0.1f;
+      float mGizmoSizeClipSpace = 0.2f;
 
       inline ImGuiID GetCurrentID()
       {
@@ -787,8 +787,8 @@ namespace IMGUIZMO_NAMESPACE
    static const char* scaleInfoMask[] = { "X : %5.2f", "Y : %5.2f", "Z : %5.2f", "XYZ : %5.2f" };
    static const char* rotationInfoMask[] = { "X : %5.2f deg %5.2f rad", "Y : %5.2f deg %5.2f rad", "Z : %5.2f deg %5.2f rad", "Screen : %5.2f deg %5.2f rad" };
    static const int translationInfoIndex[] = { 0,0,0, 1,0,0, 2,0,0, 1,2,0, 0,2,0, 0,1,0, 0,1,2 };
-   static const float quadMin = 0.5f;
-   static const float quadMax = 0.8f;
+   static const float quadMin = 0.0f;
+   static const float quadMax = 0.25f;
    static const float quadUV[8] = { quadMin, quadMin, quadMin, quadMax, quadMax, quadMax, quadMax, quadMin };
    static const int halfCircleSegmentCount = 64;
    static const float snapTension = 0.5f;
@@ -847,7 +847,7 @@ namespace IMGUIZMO_NAMESPACE
 
    static float GetSegmentLengthClipSpace(const vec_t& start, const vec_t& end, const bool localCoordinates = false)
    {
-      vec_t startOfSegment = start;
+		vec_t startOfSegment = start;
       const matrix_t& mvp = localCoordinates ? gContext.mMVPLocal : gContext.mMVP;
       startOfSegment.TransformPoint(mvp);
       if (fabsf(startOfSegment.w) > FLT_EPSILON) // check for axis aligned with camera direction
@@ -1418,7 +1418,7 @@ namespace IMGUIZMO_NAMESPACE
             {
                bool hasTranslateOnAxis = Contains(op, static_cast<OPERATION>(TRANSLATE_X << i));
                float markerScale = hasTranslateOnAxis ? 1.4f : 1.0f;
-               ImVec2 baseSSpace = worldToPos(dirAxis * 0.1f * gContext.mScreenFactor, gContext.mMVP);
+               ImVec2 baseSSpace = worldToPos(dirAxis * 0.0001 * gContext.mScreenFactor, gContext.mMVP);
                ImVec2 worldDirSSpaceNoScale = worldToPos(dirAxis * markerScale * gContext.mScreenFactor, gContext.mMVP);
                ImVec2 worldDirSSpace = worldToPos((dirAxis * markerScale * scaleDisplay[i]) * gContext.mScreenFactor, gContext.mMVP);
 
@@ -1434,17 +1434,17 @@ namespace IMGUIZMO_NAMESPACE
                   drawList->AddLine(baseSSpace, worldDirSSpace, colors[i + 1], gContext.mStyle.ScaleLineThickness);
                }
                drawList->AddCircleFilled(worldDirSSpace, gContext.mStyle.ScaleLineCircleSize, colors[i + 1]);
-
-               if (gContext.mAxisFactor[i] < 0.f)
+               
+               /*if (gContext.mAxisFactor[i] < 0.f)
                {
                   DrawHatchedAxis(dirAxis * scaleDisplay[i]);
-               }
+               }*/
             }
          }
       }
 
       // draw screen cirle
-      drawList->AddCircleFilled(gContext.mScreenSquareCenter, gContext.mStyle.CenterCircleSize, colors[0], 32);
+      //drawList->AddCircleFilled(gContext.mScreenSquareCenter, gContext.mStyle.CenterCircleSize, colors[0], 32);
 
       if (gContext.mbUsing && (gContext.GetCurrentID() == gContext.mEditingID) && IsScaleType(type))
       {
@@ -1583,7 +1583,7 @@ namespace IMGUIZMO_NAMESPACE
             // draw axis
             if (belowAxisLimit && Intersects(op, static_cast<OPERATION>(TRANSLATE_X << i)))
             {
-               ImVec2 baseSSpace = worldToPos(dirAxis * 0.1f * gContext.mScreenFactor, gContext.mMVP);
+               ImVec2 baseSSpace = worldToPos(dirAxis * 0.0001f * gContext.mScreenFactor, gContext.mMVP);
                ImVec2 worldDirSSpace = worldToPos(dirAxis * gContext.mScreenFactor, gContext.mMVP);
 
                drawList->AddLine(baseSSpace, worldDirSSpace, colors[i + 1], gContext.mStyle.TranslationLineThickness);
@@ -1600,10 +1600,10 @@ namespace IMGUIZMO_NAMESPACE
                drawList->AddTriangleFilled(worldDirSSpace - dir, a + ortogonalDir, a - ortogonalDir, colors[i + 1]);
                // Arrow head end
 
-               if (gContext.mAxisFactor[i] < 0.f)
+              /* if (gContext.mAxisFactor[i] < 0.f)
                {
                   DrawHatchedAxis(dirAxis);
-               }
+               }*/
             }
          }
          // draw plane
@@ -1614,7 +1614,8 @@ namespace IMGUIZMO_NAMESPACE
                ImVec2 screenQuadPts[4];
                for (int j = 0; j < 4; ++j)
                {
-                  vec_t cornerWorldPos = (dirPlaneX * quadUV[j * 2] + dirPlaneY * quadUV[j * 2 + 1]) * gContext.mScreenFactor;
+                  float planeScale = gContext.mScreenFactor;
+                  vec_t cornerWorldPos = (dirPlaneX * quadUV[j * 2] + dirPlaneY * quadUV[j * 2 + 1]) * planeScale;
                   screenQuadPts[j] = worldToPos(cornerWorldPos, gContext.mMVP);
                }
                drawList->AddPolyline(screenQuadPts, 4, GetColorU32(DIRECTION_X + i), true, 1.0f);
@@ -1623,7 +1624,7 @@ namespace IMGUIZMO_NAMESPACE
          }
       }
 
-      drawList->AddCircleFilled(gContext.mScreenSquareCenter, gContext.mStyle.CenterCircleSize, colors[0], 32);
+      //drawList->AddCircleFilled(gContext.mScreenSquareCenter, gContext.mStyle.CenterCircleSize, colors[0], 32);
 
       if (gContext.mbUsing && (gContext.GetCurrentID() == gContext.mEditingID) && IsTranslateType(type))
       {
