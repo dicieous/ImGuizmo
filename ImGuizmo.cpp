@@ -766,7 +766,7 @@ namespace IMGUIZMO_NAMESPACE
       OPERATION mOperation = OPERATION(-1);
 
       bool mAllowAxisFlip = true;
-      float mGizmoSizeClipSpace = 0.2f;
+      float mGizmoSizeClipSpace = 0.18f;
 
       inline ImGuiID GetCurrentID()
       {
